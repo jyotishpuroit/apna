@@ -545,47 +545,53 @@ function Product() {
     setScategory({ ...scategory, [e.target.name]: e.target.value });
   };
   useEffect(() => {
-    try {
-      axios
-        .get(`${process.env.REACT_APP_BASEURL}/category?category=${indVal}`)
-        .then((response) => {
-          if (response.data !== []) {
-            let cgory = response.data;
-            if (indVal === scategory.parent_category) {
-              setSubCategory(cgory);
-              setproductdata({
-                ...productdata,
-                parent_category: "0",
-                category: indVal,
-              });
-            } else if (indVal === scategory.sub_category) {
-              setchildCategory(cgory);
-              setproductdata({
-                ...productdata,
-                parent_category: cgory[0].all_parent_id,
-                category: indVal,
-              });
-              setlevel(2);
-            } else if (indVal === scategory.childcategory) {
-              setgrandcCategory(cgory);
-              setproductdata({
-                ...productdata,
-                parent_category: cgory[0].all_parent_id,
-                category: indVal,
-              });
-              setlevel(3);
-            } else if (indVal === scategory.gcategory) {
-              setgrandcCategory(cgory);
-              setproductdata({
-                ...productdata,
-                parent_category: cgory[0].all_parent_id,
-                category: indVal,
-              });
-              setlevel(4);
+    if(indVal === ""){
+
+    }
+    else{
+      try {
+        axios
+          .get(`${process.env.REACT_APP_BASEURL}/category?category=${indVal}`)
+          .then((response) => {
+            if (response.data !== []) {
+              let cgory = response.data;
+              if (indVal === scategory.parent_category) {
+                setSubCategory(cgory);
+                setproductdata({
+                  ...productdata,
+                  parent_category: "0",
+                  category: indVal,
+                });
+              } else if (indVal === scategory.sub_category) {
+                setchildCategory(cgory);
+                setproductdata({
+                  ...productdata,
+                  parent_category: cgory[0].all_parent_id,
+                  category: indVal,
+                });
+                setlevel(2);
+              } else if (indVal === scategory.childcategory) {
+                setgrandcCategory(cgory);
+                setproductdata({
+                  ...productdata,
+                  parent_category: cgory[0].all_parent_id,
+                  category: indVal,
+                });
+                setlevel(3);
+              } else if (indVal === scategory.gcategory) {
+                setgrandcCategory(cgory);
+                setproductdata({
+                  ...productdata,
+                  parent_category: cgory[0].all_parent_id,
+                  category: indVal,
+                });
+                setlevel(4);
+              }
             }
-          }
-        });
-    } catch (err) {}
+          });
+      } catch (err) {}
+    }
+   
   }, [scategory, indVal]);
   // modal
   const [editparentCategory, seteditparentCategory] = useState("");
