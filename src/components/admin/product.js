@@ -34,7 +34,6 @@ let encoded;
 let ImgObj = [];
 
 function Product() {
-  const [checkProductType,setCheckProductType]=useState(false)
   const [error, setError] = useState(true);
   const [vendorid, setVendorId] = useState([]);
   const [category, setCategory] = useState([]);
@@ -216,7 +215,6 @@ function Product() {
       )
       .then((response) => {
         setpdata(response.data);
-        // console.log("jjjjjjj++++"+response.data)
         setCondition(false);
         setapicall(false);
       })
@@ -257,7 +255,7 @@ function Product() {
       product_id: `${productid}`,
       fetured_type: e.target.value,
     });
-   
+    console.log("******__________========"+JSON.stringify(featuredata))
     setproductname(productname);
     setfeatureShow(true);
   };
@@ -545,53 +543,47 @@ function Product() {
     setScategory({ ...scategory, [e.target.name]: e.target.value });
   };
   useEffect(() => {
-    if(indVal === ""){
-
-    }
-    else{
-      try {
-        axios
-          .get(`${process.env.REACT_APP_BASEURL}/category?category=${indVal}`)
-          .then((response) => {
-            if (response.data !== []) {
-              let cgory = response.data;
-              if (indVal === scategory.parent_category) {
-                setSubCategory(cgory);
-                setproductdata({
-                  ...productdata,
-                  parent_category: "0",
-                  category: indVal,
-                });
-              } else if (indVal === scategory.sub_category) {
-                setchildCategory(cgory);
-                setproductdata({
-                  ...productdata,
-                  parent_category: cgory[0].all_parent_id,
-                  category: indVal,
-                });
-                setlevel(2);
-              } else if (indVal === scategory.childcategory) {
-                setgrandcCategory(cgory);
-                setproductdata({
-                  ...productdata,
-                  parent_category: cgory[0].all_parent_id,
-                  category: indVal,
-                });
-                setlevel(3);
-              } else if (indVal === scategory.gcategory) {
-                setgrandcCategory(cgory);
-                setproductdata({
-                  ...productdata,
-                  parent_category: cgory[0].all_parent_id,
-                  category: indVal,
-                });
-                setlevel(4);
-              }
+    try {
+      axios
+        .get(`${process.env.REACT_APP_BASEURL}/category?category=${indVal}`)
+        .then((response) => {
+          if (response.data !== []) {
+            let cgory = response.data;
+            if (indVal === scategory.parent_category) {
+              setSubCategory(cgory);
+              setproductdata({
+                ...productdata,
+                parent_category: "0",
+                category: indVal,
+              });
+            } else if (indVal === scategory.sub_category) {
+              setchildCategory(cgory);
+              setproductdata({
+                ...productdata,
+                parent_category: cgory[0].all_parent_id,
+                category: indVal,
+              });
+              setlevel(2);
+            } else if (indVal === scategory.childcategory) {
+              setgrandcCategory(cgory);
+              setproductdata({
+                ...productdata,
+                parent_category: cgory[0].all_parent_id,
+                category: indVal,
+              });
+              setlevel(3);
+            } else if (indVal === scategory.gcategory) {
+              setgrandcCategory(cgory);
+              setproductdata({
+                ...productdata,
+                parent_category: cgory[0].all_parent_id,
+                category: indVal,
+              });
+              setlevel(4);
             }
-          });
-      } catch (err) {}
-    }
-   
+          }
+        });
+    } catch (err) {}
   }, [scategory, indVal]);
   // modal
   const [editparentCategory, seteditparentCategory] = useState("");
@@ -908,10 +900,6 @@ function Product() {
   };
 
   const onVariantChange = (e) => {
-    if (productdata.product_type="")
-    {
-      setCheckProductType(true)
-    }
     setValidated(false);
     setcustomValidated(false);
     setVarietyUnitvalidation("");
@@ -980,8 +968,6 @@ function Product() {
         setcustomValidated(true);
       } else if (variantarray.quantity === 0 || variantarray.quantity < 1) {
         setVarietyUnitvalidation("QwanityValidation");
-      }else if (variantarray.manufacturing_date>variantarray.expire_date){
-        setVarietyUnitvalidation("ExpireDateValidation")
       } else if (
         vdata[0].product_type === "Cloths" &&
         variantarray.unit === "pcs" &&
@@ -1066,8 +1052,6 @@ function Product() {
         setcustomValidated(true);
       } else if (variantarray.quantity === 0 || variantarray.quantity < 1) {
         setVarietyUnitvalidation("QwanityValidation");
-      }else if (variantarray.manufacturing_date>variantarray.expire_date){
-        setVarietyUnitvalidation("ExpireDateValidation")
       } else if (
         vdata[0].product_type === "Cloths" &&
         variantarray.unit === "pcs" &&
@@ -1144,8 +1128,7 @@ function Product() {
     }
     // e.preventDefault()
   };
- console.log("product type----+"+productdata.product_type)
- console.log("veriant array----+"+JSON.stringify(variantarray))
+
   const VariantAddProduct = (e) => {
     setproductdata({
       ...productdata,
@@ -1165,24 +1148,18 @@ function Product() {
       setcustomValidated(true);
     } else if (variantarray.quantity === 0 || variantarray.quantity < 1) {
       setVarietyUnitvalidation("QwanityValidation");
-    } else if (variantarray.manufacturing_date>variantarray.expire_date){
-      setVarietyUnitvalidation("ExpireDateValidation")
-    }else if (
+    } else if (
       productdata.product_type === "Cloths" &&
       variantarray.unit === "pcs" &&
-      (variantarray.colors === "" || 
-      variantarray.size === null ||variantarray.size === "")
+      (variantarray.colors === "" || variantarray.size === "")
     ) {
-       console.log("fill the size and color")
       setVarietyUnitvalidation("fillUnit&size&color");
     } else if (
       productdata.product_type !== "Cloths" &&
       variantarray.unit === "pcs" &&
       variantarray.colors === "" &&
-     ( variantarray.size === ""|| 
-      variantarray.size === null )
+      variantarray.size === ""
     ) {
-      console.log("fill the  color")
       setVarietyUnitvalidation("fillUnit&color");
     } else if (
       variantarray.unit !== "pcs" &&
@@ -1191,7 +1168,6 @@ function Product() {
         variantarray.unit_quantity === null)
     ) {
       setunitValidated(true);
-      console.log("Unit qwanity--")
       setVarietyUnitvalidation("unitQwanity&size&color");
     } else if (Number(variantarray.discount) > 100) {
       setunitValidated(true);
@@ -2295,7 +2271,6 @@ function Product() {
                                                 aria-label="Default select example"
                                                 name="unit"
                                                 required
-                                                
                                                 value={variantarray.unit}
                                                 onChange={(e) =>
                                                   onVariantChange(e)
@@ -2312,22 +2287,6 @@ function Product() {
                                                 {(varietyy.variety || []).map(
                                                   (vari, i) => {
                                                     return (
-                                                      productdata.product_type === "Cloths"|| productdata.product_type === "Fashion"?
-                                                      vari === "weight" || vari === "volume" ? null :
-                                                      <option
-                                                      value={
-                                                        vari === "piece"
-                                                          ? "piece"
-                                                          : vari === "color"
-                                                          ? "pcs"
-                                                          : ""
-                                                      }
-                                                      key={i}
-                                                    >
-                                                      {vari}
-                                                    </option>
-                                                      :
-                                                      vari === "color"  ? null :
                                                       <option
                                                         value={
                                                           vari === "weight"
@@ -2336,6 +2295,8 @@ function Product() {
                                                             ? "ml"
                                                             : vari === "piece"
                                                             ? "piece"
+                                                            : vari === "color"
+                                                            ? "pcs"
                                                             : ""
                                                         }
                                                         key={i}
@@ -2370,7 +2331,7 @@ function Product() {
                                             </InputGroup>
                                           </div>
                                         </td>
-                                     {console.log("data---"+productdata.product_type)}
+
                                         <td className="p-0 text-center">
                                           <div className=" d-flex align-items-center">
                                             <InputGroup className="" size="sm">
@@ -2407,17 +2368,12 @@ function Product() {
                                           <div className=" d-flex align-items-center">
                                             <InputGroup className="" size="sm">
                                               <Form.Control
-                                                // value={
-                                                //   variantarray.unit !== ""
-                                                //     ? variantarray.size
-                                                //     : variantarray.unit === ""
-                                                //     ? ""
-                                                //     : null
-                                                // }
-                                                disabled={
-                                                 variantarray.unit!=="pcs"
-                                                    ?true
-                                                    : false
+                                                value={
+                                                  variantarray.unit !== ""
+                                                    ? variantarray.size
+                                                    : variantarray.unit === ""
+                                                    ? ""
+                                                    : null
                                                 }
                                                 type="text"
                                                 sm="9"
@@ -2669,15 +2625,7 @@ function Product() {
                                           </div>
                                         </td>
                                       </tr>
-                           {varietyUnitvalidation ==="ExpireDateValidation"? 
-                            <tr>
-                                <p
-                                  className="mt-1 ms-2 text-danger"
-                                  type="invalid"
-                                >
-                                  Please Expire date should be greater than Manufacturing date
-                                </p>
-                              </tr>:null}
+
                                       <tr>
                                         {customvalidated === true ? (
                                           <p
@@ -3473,15 +3421,6 @@ function Product() {
                                 </div>
                               </td>
                             </tr>
-                            {varietyUnitvalidation ==="ExpireDateValidation"? 
-                            <tr>
-                                <p
-                                  className="mt-1 ms-2 text-danger"
-                                  type="invalid"
-                                >
-                                  Please Expire date should be greater than Manufacturing date
-                                </p>
-                              </tr>:null}
 
                             <tr>
                               {customvalidated === true ? (
